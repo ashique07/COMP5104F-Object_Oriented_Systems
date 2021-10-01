@@ -164,7 +164,7 @@ public class Server {
 
     public void writeHandToClient(int clientNumber){
 
-        String hand = "";
+        String hand = "HAND: " + "\n";
 
         if(clientNumber == 0)
         {
@@ -204,7 +204,7 @@ public class Server {
 
     public void writeTableToClient(int clientNumber)
     {
-        String tableString = "";
+        String tableString = "TABLE: " + "\n";
 
         for(int i = 0; i < table.size(); i++)
         {
@@ -317,26 +317,11 @@ public class Server {
 
         distributeTilesToPlayers();
 
-        /*
-        for(int i = 0; i < clientsNetworkingInfo.size(); i++)
-        {
-            //*2*
-            writeTableToClient(i);
-        }
-
-        for(int i = 0; i < clientsNetworkingInfo.size(); i++)
-        {
-            //*3*
-            writeHandToClient(i);
-        }
-         */
-
         int i = 0;
         boolean notEndOfGame = true;
+        int winner = 0;
 
         while(notEndOfGame){
-
-            System.out.println("Number of client in SERVER: " + i);
 
             if(!clientsNetworkingInfo.get(i).isClosed()){
 
@@ -363,7 +348,7 @@ public class Server {
                     {
                         if (playAMeld(melds, i))
                         {
-                            System.out.println("Player " + i + " is the winner !!");
+                            winner = i;
                             notEndOfGame = false;
                         }
                     }
@@ -381,8 +366,45 @@ public class Server {
             i = (i + 1) % clientsNetworkingInfo.size();
         }
 
+            int player0Score = 0;
+            int player1Score = 0;
+            int player2Score = 0;
+
+
+            for(int y = 0; y < player0Hand.size(); y++)
+            {
+                player0Score += Integer.parseInt(player0Hand.get(y).substring(1));
+            }
+
+            for(int j = 0; j < player1Hand.size(); j++)
+            {
+                player1Score += Integer.parseInt(player1Hand.get(j).substring(1));
+            }
+
+            for(int k = 0; k < player2Hand.size(); k++)
+            {
+                player2Score += Integer.parseInt(player2Hand.get(k).substring(1));
+            }
+
+            String message = "Player " + winner + "is the winner" + "\n" + "Player 0 score: " + player0Score + "\n" + "Player 1 score: " + player1Score + "\n" + "Player 2 score: " + player2Score;
+
+            System.out.println(message);
+
+            try {
+                for (int x = 0; x < clientsNetworkingInfo.size(); x++)
+                    Utils.writeParagraph(new PrintWriter(clientsNetworkingInfo.get(x).getOutputStream(), true), message + "\n");
+            }
+            catch (IOException e)
+            {
+
+            }
+
         System.out.println("Server shutting down . . . .");
         try {
+
+            for(int z = 0; z < clientsNetworkingInfo.size(); z++)
+                clientsNetworkingInfo.get(z).close();
+
             serverSocket.close();
         }
         catch (IOException e) {

@@ -47,25 +47,12 @@ public class Client {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             Utils.readParagraph(bufferedReader);
 
-            /*
-            //Get the starting table from server
-            System.out.println("TABLE: ");
-            Utils.readParagraph(bufferedReader);
-
-            //Get the starting hand from server
-            System.out.println("HAND: ");
-            Utils.readParagraph(bufferedReader);
-            */
-
-
             while (socket.isConnected()) {
 
                 //Get the updated table from server
-                System.out.println("TABLE: ");
                 Utils.readParagraph(bufferedReader);
 
                 //Get the updated hand from server
-                System.out.println("HAND: ");
                 Utils.readParagraph(bufferedReader);
 
                 //"Press 1 for playing a meld(s). Press 2 from taking a tile."
@@ -84,15 +71,15 @@ public class Client {
                 Utils.writeParagraph(new PrintWriter(socket.getOutputStream(), true), melds);
 
                 //Get the updated table from server
-                System.out.println("TABLE: ");
                 Utils.readParagraph(bufferedReader);
 
                 //Get the updated hand from server
-                System.out.println("HAND: ");
                 Utils.readParagraph(bufferedReader);
 
             }
 
+            System.out.println("END OF GAME");
+            Utils.readParagraph(bufferedReader);
 
             //Close socket and buffer reader
             bufferedReader.close();

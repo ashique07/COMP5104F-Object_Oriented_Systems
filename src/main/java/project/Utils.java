@@ -139,10 +139,9 @@ public class Utils {
 
         for(int i = 0; i < r.size(); i++)
         {
-            numberI = Integer.parseInt(r.get(i).substring(1));
-
             for(int j = i+1; j < r.size(); j++)
             {
+                numberI = Integer.parseInt(r.get(i).substring(1));
                 numberJ = Integer.parseInt(r.get(j).substring(1));
 
                 if(numberI > numberJ)
@@ -165,10 +164,9 @@ public class Utils {
 
         for(int i = 0; i < b.size(); i++)
         {
-            numberI = Integer.parseInt(b.get(i).substring(1));
-
             for(int j = i+1; j < b.size(); j++)
             {
+                numberI = Integer.parseInt(b.get(i).substring(1));
                 numberJ = Integer.parseInt(b.get(j).substring(1));
 
                 if(numberI > numberJ)
@@ -192,10 +190,9 @@ public class Utils {
 
         for(int i = 0; i < g.size(); i++)
         {
-            numberI = Integer.parseInt(g.get(i).substring(1));
-
             for(int j = i+1; j < g.size(); j++)
             {
+                numberI = Integer.parseInt(g.get(i).substring(1));
                 numberJ = Integer.parseInt(g.get(j).substring(1));
 
                 if(numberI > numberJ)
@@ -218,10 +215,10 @@ public class Utils {
 
         for(int i = 0; i < o.size(); i++)
         {
-            numberI = Integer.parseInt(o.get(i).substring(1));
 
             for(int j = i+1; j < o.size(); j++)
             {
+                numberI = Integer.parseInt(o.get(i).substring(1));
                 numberJ = Integer.parseInt(o.get(j).substring(1));
 
                 if(numberI > numberJ)
