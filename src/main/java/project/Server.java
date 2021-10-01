@@ -168,6 +168,7 @@ public class Server {
 
         if(clientNumber == 0)
         {
+            player0Hand = Utils.sort(player0Hand);
             for(int i = 0; i < player0Hand.size(); i++)
             {
                 hand = hand + player0Hand.get(i) + " ";
@@ -176,6 +177,7 @@ public class Server {
 
         if(clientNumber == 1)
         {
+            player1Hand = Utils.sort(player1Hand);
             for(int i = 0; i < player1Hand.size(); i++)
             {
                 hand = hand + player1Hand.get(i) + " ";
@@ -184,6 +186,7 @@ public class Server {
 
         if(clientNumber == 2)
         {
+            player2Hand = Utils.sort(player2Hand);
             for(int i = 0; i < player2Hand.size(); i++)
             {
                 hand = hand + player2Hand.get(i) + " ";
@@ -252,31 +255,44 @@ public class Server {
 
                     if(clientNumber == 0)
                     {
-                        if(player0Hand.size() == 0)
-                            return true;
+                        if(player0Hand.contains(tile))
                         player0Hand.remove(tile);
                     }
 
                     if(clientNumber == 1)
                     {
-                        if(player1Hand.size() == 0)
-                            return true;
+                        if(player1Hand.contains(tile))
                         player1Hand.remove(tile);
                     }
 
                     if(clientNumber == 2)
                     {
-                        if(player2Hand.size() == 0)
-                            return true;
+                        if(player2Hand.contains(tile))
                         player2Hand.remove(tile);
                     }
                 }
 
                 table.add(meldList);
+
+
+                if(clientNumber == 0) {
+                    if(player0Hand.size() == 0)
+                        return true;
+                }
+
+                if(clientNumber == 1) {
+                    if(player1Hand.size() == 0)
+                        return true;
+                }
+
+                if(clientNumber == 2) {
+                    if(player2Hand.size() == 0)
+                        return true;
+                }
+
                 i = j;
             }
         }
-
         return false;
     }
 
@@ -301,6 +317,7 @@ public class Server {
 
         distributeTilesToPlayers();
 
+        /*
         for(int i = 0; i < clientsNetworkingInfo.size(); i++)
         {
             //*2*
@@ -312,12 +329,21 @@ public class Server {
             //*3*
             writeHandToClient(i);
         }
+         */
 
-        for(int i = 0; i < clientsNetworkingInfo.size(); i++){
+        int i = 0;
+        boolean notEndOfGame = true;
+
+        while(notEndOfGame){
+
+            System.out.println("Number of client in SERVER: " + i);
 
             if(!clientsNetworkingInfo.get(i).isClosed()){
 
                 try {
+
+                    writeTableToClient(i);
+                    writeHandToClient(i);
 
                     //"Press 1 for playing a meld(s). Press 2 from taking a tile."
                     String turnMessage = "It is your turn now !" + "\n"  + "Press 1 for playing a meld and Press 2 for taking a tile.";
@@ -328,11 +354,9 @@ public class Server {
                     BufferedReader meldsBr = new BufferedReader(new InputStreamReader(clientsNetworkingInfo.get(i).getInputStream()));
                     String melds = meldsBr.readLine();
 
-                    System.out.println("MELDS RECEIVED IN SERVER ARE: " + melds);
 
                     if(melds.equals(""))
                     {
-                        System.out.println("Inside TAKE A TILE of Server");
                         takeATile(i);
                     }
                     else
@@ -340,22 +364,22 @@ public class Server {
                         if (playAMeld(melds, i))
                         {
                             System.out.println("Player " + i + " is the winner !!");
-                            break;
+                            notEndOfGame = false;
                         }
                     }
 
                     writeTableToClient(i);
                     writeHandToClient(i);
+
                 }
                 catch (IOException e){
 
                     e.printStackTrace();
                 }
             }
+
+            i = (i + 1) % clientsNetworkingInfo.size();
         }
-
-
-
 
         System.out.println("Server shutting down . . . .");
         try {
@@ -367,4 +391,3 @@ public class Server {
     }
 
 }
-

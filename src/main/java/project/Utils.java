@@ -119,4 +119,136 @@ public class Utils {
         return false;
     }
 
+    public static List<String> sort(List<String> l1)
+    {
+        List<String> l2 = new ArrayList<>();
+        List<String> r = new ArrayList<>();
+        List<String> b = new ArrayList<>();
+        List<String> g = new ArrayList<>();
+        List<String> o = new ArrayList<>();
+        int numberI = 0;
+        int numberJ = 0;
+
+        for(int i = 0; i < l1.size(); i++)
+        {
+            if(l1.get(i).charAt(0) == 'R')
+            {
+                r.add(l1.get(i));
+            }
+        }
+
+        for(int i = 0; i < r.size(); i++)
+        {
+            numberI = Integer.parseInt(r.get(i).substring(1));
+
+            for(int j = i+1; j < r.size(); j++)
+            {
+                numberJ = Integer.parseInt(r.get(j).substring(1));
+
+                if(numberI > numberJ)
+                {
+                    Collections.swap(r, i, j);
+                }
+            }
+        }
+        //////////////////////////////////////
+
+        numberI = 0;
+        numberJ = 0;
+        for(int i = 0; i < l1.size(); i++)
+        {
+            if(l1.get(i).charAt(0) == 'B')
+            {
+                b.add(l1.get(i));
+            }
+        }
+
+        for(int i = 0; i < b.size(); i++)
+        {
+            numberI = Integer.parseInt(b.get(i).substring(1));
+
+            for(int j = i+1; j < b.size(); j++)
+            {
+                numberJ = Integer.parseInt(b.get(j).substring(1));
+
+                if(numberI > numberJ)
+                {
+                    Collections.swap(b, i, j);
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////
+
+        numberI = 0;
+        numberJ = 0;
+        for(int i = 0; i < l1.size(); i++)
+        {
+            if(l1.get(i).charAt(0) == 'G')
+            {
+                g.add(l1.get(i));
+            }
+        }
+
+        for(int i = 0; i < g.size(); i++)
+        {
+            numberI = Integer.parseInt(g.get(i).substring(1));
+
+            for(int j = i+1; j < g.size(); j++)
+            {
+                numberJ = Integer.parseInt(g.get(j).substring(1));
+
+                if(numberI > numberJ)
+                {
+                    Collections.swap(g, i, j);
+                }
+            }
+        }
+        ////////////////////////////////////////////////
+
+        numberI = 0;
+        numberJ = 0;
+        for(int i = 0; i < l1.size(); i++)
+        {
+            if(l1.get(i).charAt(0) == 'O')
+            {
+                o.add(l1.get(i));
+            }
+        }
+
+        for(int i = 0; i < o.size(); i++)
+        {
+            numberI = Integer.parseInt(o.get(i).substring(1));
+
+            for(int j = i+1; j < o.size(); j++)
+            {
+                numberJ = Integer.parseInt(o.get(j).substring(1));
+
+                if(numberI > numberJ)
+                {
+                    Collections.swap(o, i, j);
+                }
+            }
+        }
+
+        for(int i = 0; i < r.size(); i++)
+        {
+            l2.add(r.get(i));
+        }
+        for(int i = 0; i < b.size(); i++)
+        {
+            l2.add(b.get(i));
+        }
+        for(int i = 0; i < g.size(); i++)
+        {
+            l2.add(g.get(i));
+        }
+        for(int i = 0; i < o.size(); i++)
+        {
+            l2.add(o.get(i));
+        }
+
+        return l2;
+    }
+
 }
