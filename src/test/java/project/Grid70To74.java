@@ -14,7 +14,17 @@ class Grid70To74 {
     void grid71(){
 
         Server server = new Server();
-        server.distributeTilesToPlayers();
+
+        String handOfP0 = "G2 R2 O2 G3 R3 O3 O8 O9 O10 R8 R9 R10 G12 R7";
+        String [] arrayOfTiles = handOfP0.split(" ");
+
+        for(int i = 0; i < arrayOfTiles.length; i++)
+        {
+            String tile = arrayOfTiles[i];
+
+            server.player0Hand.add(server.stock.remove(server.stock.indexOf(tile)));
+        }
+
 
         server.takeATile(0);
 
@@ -28,7 +38,16 @@ class Grid70To74 {
     void grid72(){
 
         Server server = new Server();
-        server.distributeTilesToPlayers();
+
+        String handOfP0 = "G2 G2 O2 R3 B3 B3 R5 B6 O7 R9 R10 G11 B12 B13";
+        String [] arrayOfTiles = handOfP0.split(" ");
+
+        for(int i = 0; i < arrayOfTiles.length; i++)
+        {
+            String tile = arrayOfTiles[i];
+
+            server.player0Hand.add(server.stock.remove(server.stock.indexOf(tile)));
+        }
 
         server.takeATile(0);
 
