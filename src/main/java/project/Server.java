@@ -13,6 +13,7 @@ public class Server {
 
     public List<String> stock = new ArrayList<String>(
             Arrays.asList(
+                    "*",
                     "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13",
                     "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13",
                     "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10", "G11", "G12", "G13",
@@ -29,6 +30,10 @@ public class Server {
     public List<String> player2Hand = new ArrayList<String>();
 
     public List<List<String>> table = new ArrayList<>();
+
+    public boolean initial30Points [] = new boolean[3];
+    public String initial30PointsOutput = "";
+    public boolean meldValidity;
 
 
     private int serverPort;
@@ -227,73 +232,264 @@ public class Server {
 
     }
 
+    public String checkRun(List<String> meldList){
+
+        if(meldList.size() >= 3)
+        {
+            int i = 0;
+            for(i = 0; i < meldList.size()-1; i++)
+            {
+                if(meldList.get(i).equals("*") || meldList.get(i+1).equals("*"))
+                    continue;
+
+                char currColor = meldList.get(i).charAt(0);
+                int currNumber = Integer.parseInt(meldList.get(i).substring(1));
+
+                char nextColor = meldList.get(i+1).charAt(0);
+                int nextNumber = Integer.parseInt(meldList.get(i+1).substring(1));
+
+                if((currColor != nextColor) || (currNumber != nextNumber-1))
+                {
+                    return "invalid";
+                }
+            }
+
+            return "run";
+        }
+        return "invalid";
+    }
+
+    public String checkSet(List<String> meldList)
+    {
+        if(meldList.size() == 3 || meldList.size() == 4)
+        {
+            //CHECK UNIQUE COLORS
+            int i = 0;
+            for(i = 0; i < meldList.size(); i++)
+            {
+                if(meldList.get(i).equals("*"))
+                    continue;
+
+                char currColor = meldList.get(i).charAt(0);
+                int currNumber = Integer.parseInt(meldList.get(i).substring(1));
+
+                for(int j = i+1; j < meldList.size(); j++)
+                {
+                    if(meldList.get(j).equals("*"))
+                        continue;
+
+                    char nextColor = meldList.get(j).charAt(0);
+                    int nextNumber = Integer.parseInt(meldList.get(j).substring(1));
+
+                    if((currColor == nextColor) || (currNumber != nextNumber))
+                    {
+                        return "invalid";
+                    }
+                }
+            }
+
+            return "set";
+        }
+
+        return "invalid";
+    }
+
+
+    public String validateMeld(List<String> meldList)
+    {
+        if(checkRun(meldList).equals("run"))
+            return "run";
+
+        if(checkSet(meldList).equals("set"))
+            return "set";
+
+        return "invalid";
+    }
+
+    public int meldPoint(List<String> meldList)
+    {
+        int point = 0;
+
+        String meldType = validateMeld(meldList);
+
+        if(meldType.equals("run"))
+        {
+            for(int k = 0; k < meldList.size(); k++)
+            {
+                if(meldList.get(k).equals("*"))
+                {
+                    if(k == 0)
+                    {
+                        point += Integer.parseInt(meldList.get(k+1).substring(1))-1;
+                    }
+                    else
+                    {
+                        point += Integer.parseInt(meldList.get(k-1).substring(1))+1;
+                    }
+
+                    continue;
+                }
+
+                point += Integer.parseInt(meldList.get(k).substring(1));
+            }
+        }
+        else
+        {
+            for(int m = 0; m < meldList.size(); m++)
+            {
+                if(meldList.get(m).equals("*"))
+                {
+                    if(m == 0)
+                    {
+                        point += Integer.parseInt(meldList.get(m+1).substring(1));
+                    }
+                    else
+                    {
+                        point += Integer.parseInt(meldList.get(m-1).substring(1));
+                    }
+
+                    continue;
+                }
+
+                point += Integer.parseInt(meldList.get(m).substring(1));
+            }
+        }
+
+        return point;
+    }
+
+
     public boolean playAMeld(String melds, int clientNumber){
 
         //{R2 B2 G2 O2} {G3 G4 G5 G6 G7} {O4 O5 O6 O7 O8}
 
-        for(int i = 0; i < melds.length(); i++)
-        {
-            String meld = "";
+        if(initial30Points[clientNumber]) {
+            for (int i = 0; i < melds.length(); i++) {
+                String meld = "";
 
-            List<String> meldList = new ArrayList<>();
+                List<String> meldList = new ArrayList<>();
 
-            if(melds.charAt(i) == '{')
-            {
-                int j = i+1;
+                if (melds.charAt(i) == '{') {
+                    int j = i + 1;
 
-                while (melds.charAt(j) != '}')
-                {
-                    meld += String.valueOf(melds.charAt(j));
-                    j++;
-                }
-
-                Scanner sc = new Scanner(meld);
-                while(sc.hasNext())
-                {
-                    String tile = sc.next();
-                    meldList.add(tile);
-
-                    if(clientNumber == 0)
-                    {
-                        if(player0Hand.contains(tile))
-                        player0Hand.remove(tile);
+                    while (melds.charAt(j) != '}') {
+                        meld += String.valueOf(melds.charAt(j));
+                        j++;
                     }
 
-                    if(clientNumber == 1)
-                    {
-                        if(player1Hand.contains(tile))
-                        player1Hand.remove(tile);
+                    Scanner sc = new Scanner(meld);
+                    while (sc.hasNext()) {
+                        String tile = sc.next();
+                        meldList.add(tile);
+                    }
+                    //meldList READY
+
+                    System.out.println(meldList);
+                    System.out.println(validateMeld(meldList));
+
+                    //VALIDATE MELD
+                    if(validateMeld(meldList).equals("invalid")) {
+                        System.out.println("INVALID MELD. PLEASE TRY AGAIN.");
+                        meldValidity = false;
+                        return false;
                     }
 
-                    if(clientNumber == 2)
+                    meldValidity = true;
+                    //REMOVING TILES IN MELD FROM HAND
+                    for(String tile: meldList)
                     {
-                        if(player2Hand.contains(tile))
-                        player2Hand.remove(tile);
+                        if (clientNumber == 0) {
+                            if (player0Hand.contains(tile))
+                                player0Hand.remove(tile);
+                        }
+
+                        if (clientNumber == 1) {
+                            if (player1Hand.contains(tile))
+                                player1Hand.remove(tile);
+                        }
+
+                        if (clientNumber == 2) {
+                            if (player2Hand.contains(tile))
+                                player2Hand.remove(tile);
+                        }
                     }
+
+                    //ADDING TILES IN MELD TO TABLE
+                    table.add(meldList);
+
+                    //TRUE = HAND EMPTY. END OF THE GAME.
+                    if (clientNumber == 0) {
+                        if (player0Hand.size() == 0)
+                            return true;
+                    }
+
+                    if (clientNumber == 1) {
+                        if (player1Hand.size() == 0)
+                            return true;
+                    }
+
+                    if (clientNumber == 2) {
+                        if (player2Hand.size() == 0)
+                            return true;
+                    }
+
+                    i = j;
                 }
-
-                table.add(meldList);
-
-
-                if(clientNumber == 0) {
-                    if(player0Hand.size() == 0)
-                        return true;
-                }
-
-                if(clientNumber == 1) {
-                    if(player1Hand.size() == 0)
-                        return true;
-                }
-
-                if(clientNumber == 2) {
-                    if(player2Hand.size() == 0)
-                        return true;
-                }
-
-                i = j;
             }
+            return false;
+
         }
+        else
+        {
+            int initialPoint = 0;
+            //initial 30 points not achieved
+            for (int i = 0; i < melds.length(); i++) {
+
+                String meld = "";
+                List<String> meldList = new ArrayList<>();
+
+                if (melds.charAt(i) == '{') {
+
+                    int j = i + 1;
+
+                    while (melds.charAt(j) != '}') {
+                        meld += String.valueOf(melds.charAt(j));
+                        j++;
+                    }
+                    Scanner sc = new Scanner(meld);
+                    while (sc.hasNext()) {
+                        String tile = sc.next();
+                        meldList.add(tile);
+                    }
+                    //meldList ready
+                    if(meldPoint(meldList) != 0)
+                    initialPoint += meldPoint(meldList);
+                    else {
+                        System.out.println("INVALID MELD. PLEASE TRY AGAIN.");
+                        return false;
+                    }
+
+                    i = j;
+                }
+            }
+
+            System.out.println("INITIAL POINT = " + initialPoint);
+
+            if(initialPoint >= 30)
+            {
+                initial30Points[clientNumber] = true;
+                initial30PointsOutput = "hand and table updated";
+                playAMeld(melds,clientNumber);
+            }
+            else
+            {
+                initial30PointsOutput = "insufficient total for initial tiles";
+            }
+
+        }
+
         return false;
+
     }
 
     public void takeATile(int clientNumber){
