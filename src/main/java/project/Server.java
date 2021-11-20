@@ -320,14 +320,16 @@ public class Server {
                 {
                     if(k == 0)
                     {
-                        point += Integer.parseInt(meldList.get(k+1).substring(1))-1;
+                        meldList.set(k, "*"+String.valueOf(Integer.parseInt(meldList.get(k+1).substring(1))-1));
+                        //point += Integer.parseInt(meldList.get(k+1).substring(1))-1;
                     }
                     else
                     {
-                        point += Integer.parseInt(meldList.get(k-1).substring(1))+1;
+                        meldList.set(k, "*"+String.valueOf(Integer.parseInt(meldList.get(k-1).substring(1))+1));
+                        //point += Integer.parseInt(meldList.get(k-1).substring(1))+1;
                     }
 
-                    continue;
+                    //continue;
                 }
 
                 point += Integer.parseInt(meldList.get(k).substring(1));
@@ -341,14 +343,15 @@ public class Server {
                 {
                     if(m == 0)
                     {
-                        point += Integer.parseInt(meldList.get(m+1).substring(1));
+                        meldList.set(m, "*"+String.valueOf(Integer.parseInt(meldList.get(m+1).substring(1))));
+                        //point += Integer.parseInt(meldList.get(m+1).substring(1));
                     }
                     else
                     {
-                        point += Integer.parseInt(meldList.get(m-1).substring(1));
+                        meldList.set(m, "*"+String.valueOf(Integer.parseInt(meldList.get(m-1).substring(1))));
+                        //point += Integer.parseInt(meldList.get(m-1).substring(1));
                     }
-
-                    continue;
+                    //continue;
                 }
 
                 point += Integer.parseInt(meldList.get(m).substring(1));
