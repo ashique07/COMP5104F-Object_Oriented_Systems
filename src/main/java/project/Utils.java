@@ -31,6 +31,11 @@ public class Utils {
         pw.flush();
     }
 
+    public static void fixTable(List<String> meld, Server server)
+    {
+        server.table.add(meld);
+    }
+
     public static void fixHand(int playerNumber, String tile, Server server)
     {
 

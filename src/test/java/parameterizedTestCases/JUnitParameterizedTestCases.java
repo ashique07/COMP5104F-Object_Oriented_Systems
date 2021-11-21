@@ -151,6 +151,7 @@ public class JUnitParameterizedTestCases {
         Utils.fixHand(0, "O11", server);
         Utils.fixHand(0, "G11", server);
 
+        //Achieving initial 30 points
         server.playAMeld("{R11 O11 G11}", 0);
 
         String tilesString = "";
@@ -298,6 +299,97 @@ public class JUnitParameterizedTestCases {
                 break;
             }
         }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "R3 R4 R5, R7 R8, false",
+            "R3 R4 R5, R1, false",
+            "R3 R4 R5, R3, false",
+            "R3 R4 R5, R2, true",
+            "R3 R4 R5, R1 R2, true",
+            "R1 G1 B1, O2, false",
+            "R1 G1 B1, R1 O1, false",
+            "R1 G1 B1, O1, true",
+            "R3 R4 R5, *, true",
+            "R3 R4 R5, * *, true",
+            "R1 G1 B1 O1, *, false",
+            "R1 G1 B1, *, true"
+    })
+    public void tableReuse(String initialTableMeld, String tiles, boolean valid)
+    {
+        server = new Server();
+        server.distributeTilesToPlayers();
+
+        Utils.fixHand(0, "R11", server);
+        Utils.fixHand(0, "O11", server);
+        Utils.fixHand(0, "G11", server);
+
+        //Achieving initial 30 points using R11 O11 G11
+        //R11 O11 G11 is in position 0 of table
+        server.playAMeld("{R11 O11 G11}", 0);
+
+        String initialTableMeldArray [] = initialTableMeld.split(" ");
+
+        //R3 R4 R5 is in position 1 of table
+        Utils.fixTable(new ArrayList<>(Arrays.asList(initialTableMeldArray)), server);
+
+        String tilesArray[] = tiles.split(" ");
+
+        List<String> oldMeld = server.addTilesFromHandToTableMelds(tilesArray, 1, 0);
+
+        //newMeld has all the initial tiles
+        for(String tile: initialTableMeldArray)
+            assertTrue(server.table.get(1).contains(tile));
+
+        if(valid)
+        {
+            //Number of tiles added is newMeld.size() - oldMeld.size()
+            assertTrue(tilesArray.length == (server.table.get(1).size() - oldMeld.size()));
+
+            //newMeld has all the new tiles
+            for(String tile: tilesArray)
+                assertTrue(server.table.get(1).contains(tile));
+        }
+        else
+        {
+            //oldMeld is exactly equal to the newMeld
+            for(int i = 0; i < server.table.get(1).size(); i++)
+            {
+                assertTrue(oldMeld.get(i).equals(server.table.get(1).get(i)));
+            }
+        }
+    }
+
+
+
+    @ParameterizedTest
+    @CsvSource({"1", "2"})
+    public void winnerAndScore(int setup)
+    {
+        Server server = new Server();
+
+        for(int i = 0; i < server.initial30Points.length; i++)
+        {
+            server.initial30Points[i] = true;
+        }
+
+        if(setup == 1)
+        {
+            server.player0Hand = new ArrayList<>(Arrays.asList("R1", "G1", "B1"));
+            server.player1Hand = new ArrayList<>(Arrays.asList("O2", "O3", "O4"));
+            server.player2Hand = new ArrayList<>(Arrays.asList("R4", "B6", "G9", "O13"));
+
+            server.playAMeld("{R1 G1 B1}", 0);
+
+            server.calculatePlayersFinalScore();
+
+            assertEquals(0, server.winner);
+            assertEquals(0, server.player0Score);
+            assertEquals(9, server.player1Score);
+            assertEquals(32, server.player2Score);
+        }
+
     }
 
 }
