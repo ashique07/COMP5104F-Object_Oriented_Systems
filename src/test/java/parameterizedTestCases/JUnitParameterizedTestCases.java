@@ -16,16 +16,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JUnitParameterizedTestCases {
 
-    //List<String> checkMeld = new ArrayList<>();
     Server server = null;
 
+    //Grid Line Numbers 3 to 8
+    //Test Description 1 - "Starting a networked game works"
+    @Test
+    public void startAGame()
+    {
+        server = new Server();
+        assertEquals(106, server.stock.size());
+        server.distributeTilesToPlayers();
+        assertEquals(14, server.player0Hand.size());
+        assertEquals(14, server.player1Hand.size());
+        assertEquals(14, server.player2Hand.size());
+    }
+
     //Grid Line Numbers 10 to 172
+    //Test Description 2 - "A player's attempts initial 30 points without jokers"
+    //Test Description 3 - "A player's attempts initial 30 points with jokers"
     @ParameterizedTest
     @CsvSource({
             "{R9 O9 B9}, false",
             "{B11 O11 R11}, true",
             "{B9 O9 G9 R9}, true",
-            "{R9 R10 R11}, false",
+            "{R9 R10 R11}, true",
             "{R11 R12 R13}, true",
             "{G8 G9 G10 G11}, true",
             "{R1 O1 B1} {R2 R3 R4} {R3 O3 B3} {G1 G2 G3}, false",
@@ -40,10 +54,10 @@ public class JUnitParameterizedTestCases {
             "{R9 O9 *}, false",
             "{B11 * R11}, true",
             "{* O9 G9 R9}, true",
-            "{* R10 R11}, false",
+            "{* R10 R11}, true",
             "{R11 * R13}, true",
             "{G8 G9 G10 *}, true",
-            "{O9 * *}, false",
+            "{O9 * *}, true",
             "{B11 * *}, true",
             "{* O9 * R9}, true",
             "{R9 R10 * *}, true",
@@ -122,6 +136,8 @@ public class JUnitParameterizedTestCases {
 
 
     //Grid Line Numbers 174 to 191 and 224 to 319
+    //Test Description 4 - "A player's attempts to play one or more melds from hand after initial 30 points of previous turn obtained with R11 O11 G11"
+    //Test Description 6 - "After initial 30 points obtained with R11 O11 G11,  player's attempts to play an invalid meld (regardless the value of this meld)"
     @ParameterizedTest
     @CsvSource({
             "{B11 O11 R11}, true",
@@ -137,6 +153,8 @@ public class JUnitParameterizedTestCases {
             "{* * B2 B3}, true",
             "{R1 B2 R3}, false",
             "{R1 B2 O3}, false",
+            "{B1 O1}, false",
+            "{B1 B3}, false",
             "{B2 B1 B3}, false",
             "{B1 B3 B4}, false",
             "{B4 B5 O4}, false",
@@ -217,9 +235,10 @@ public class JUnitParameterizedTestCases {
 
     }
 
-    ////Grid Line Numbers 193 to 222
+    //Grid Line Numbers 193 to 222
+    //Test Description 5 - "A player's draws"
     @ParameterizedTest
-    @CsvSource({"1", "2", "3", "4"})
+    @CsvSource({"1", "2", "3", "4", "5"})
     public void drawATile(int setup){
 
         Server server = new Server();
@@ -298,9 +317,31 @@ public class JUnitParameterizedTestCases {
 
                 break;
             }
+
+            case 5: {
+                String handOfP0 = "R2 G2 O2 R3 B3 B3 R5 B6 O7 R9 B10 B11 B12 B13";
+                String[] arrayOfTiles = handOfP0.split(" ");
+
+                for (int i = 0; i < arrayOfTiles.length; i++) {
+                    String tile = arrayOfTiles[i];
+
+                    server.player0Hand.add(server.stock.remove(server.stock.indexOf(tile)));
+                }
+
+                server.playAMeld("{B11 B12 B13}", 0);
+
+                server.takeATile(0);
+                //Check if number of tiles in hand of player 0 is 12
+                assertEquals(12, server.player0Hand.size());
+
+                break;
+            }
+
         }
     }
 
+    //Grid Line Numbers 321 to 412
+    //Test Description 7 - "After initial 30 points, a player's adds one or more cards from hand to meld(s) of the table"
     @ParameterizedTest
     @CsvSource({
             "R3 R4 R5, R7 R8, false",
@@ -362,7 +403,8 @@ public class JUnitParameterizedTestCases {
     }
 
 
-
+    //Grid Line Numbers 637 to 648
+    //Test Description - "A player's wins"
     @ParameterizedTest
     @CsvSource({"1", "2"})
     public void winnerAndScore(int setup)
@@ -388,6 +430,29 @@ public class JUnitParameterizedTestCases {
             assertEquals(0, server.player0Score);
             assertEquals(9, server.player1Score);
             assertEquals(32, server.player2Score);
+        }
+
+        if(setup == 2)
+        {
+            //P1 starts with {R2 B2 G2 O2} {G3 G4 G5 G6 G7} {O4 O5 O6 O7 O8}
+            //P2 starts with  G1 G2 O2 R3 B3 B3 R5 B6 * R9 R10 B11 B12 B13
+            //P2's score = 110
+            //P3 starts with R4 O6 B6 B7 R7 * {R10 R11 R12 R13} {B10 B11 B12 B13}
+            //P3's score = 152
+
+            server.player0Hand = new ArrayList<>(Arrays.asList("R2", "B2", "G2", "O2", "G3", "G4", "G5", "G6", "G7", "O4", "O5", "O6", "O7", "O8"));
+            server.player1Hand = new ArrayList<>(Arrays.asList("G1", "G2", "O2", "R3", "B3", "B3", "R5", "B6", "*", "R9", "R10", "B11", "B12", "B13"));
+            server.player2Hand = new ArrayList<>(Arrays.asList("R4", "O6", "B6", "B7", "R7", "*", "R10", "R11", "R12", "R13", "B10", "B11", "B12", "B13"));
+
+            server.playAMeld("{R2 B2 G2 O2} {G3 G4 G5 G6 G7} {O4 O5 O6 O7 O8}", 0);
+
+            server.calculatePlayersFinalScore();
+
+            assertEquals(0, server.winner);
+            assertEquals(0, server.player0Score);
+            assertEquals(110, server.player1Score);
+            assertEquals(152, server.player2Score);
+
         }
 
     }

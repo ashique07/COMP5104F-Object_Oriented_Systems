@@ -13,7 +13,7 @@ public class Server {
 
     public List<String> stock = new ArrayList<String>(
             Arrays.asList(
-                    "*",
+                    "*", "*",
                     "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13",
                     "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13",
                     "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10", "G11", "G12", "G13",
@@ -554,16 +554,31 @@ public class Server {
     {
         for(int y = 0; y < player0Hand.size(); y++)
         {
+            if(player0Hand.get(y).equals("*")){
+                player0Score += 30;
+                continue;
+            }
+
             player0Score += Integer.parseInt(player0Hand.get(y).substring(1));
         }
 
         for(int j = 0; j < player1Hand.size(); j++)
         {
+            if(player1Hand.get(j).equals("*")){
+                player1Score += 30;
+                continue;
+            }
+
             player1Score += Integer.parseInt(player1Hand.get(j).substring(1));
         }
 
         for(int k = 0; k < player2Hand.size(); k++)
         {
+            if(player2Hand.get(k).equals("*")){
+                player2Score += 30;
+                continue;
+            }
+
             player2Score += Integer.parseInt(player2Hand.get(k).substring(1));
         }
 
